@@ -9,7 +9,7 @@ TODO: Delete this and the text above, and describe your gem
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'thumper'
+gem 'thumper', github: 'cimon-io/thumper'
 ```
 
 And then execute:
@@ -22,7 +22,29 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+1. Add following line to a projects' `Procfile`:
+
+```
+broker: ./bin/rake messagebroker:watch
+```
+
+2. Add separate sidekiq queue:
+
+```yml
+:queues:
+  - [bunny, 3]
+```
+
+3. Following ENV variables should be configured as well:
+
+```
+AMQP_NAME
+AMQP_URL
+AMQP_HOST
+AMQP_PORT
+AMQP_USER
+AMQP_PSWD
+```
 
 ## Development
 
