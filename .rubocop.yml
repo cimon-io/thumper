@@ -1,0 +1,47 @@
+
+AllCops:
+  Exclude:
+    - 'Rakefile'
+
+LineLength:
+  Enabled: false
+
+StringLiterals:
+  EnforcedStyle: single_quotes
+
+Layout/DotPosition:
+  EnforcedStyle: leading
+  Enabled: true
+
+Documentation:
+  Enabled: false
+
+Naming/MemoizedInstanceVariableName:
+  Enabled: false
+
+Naming/UncommunicativeMethodParamName:
+  Enabled: false
+
+Style/FrozenStringLiteralComment:
+  Enabled: false
+
+Style/SymbolArray:
+  Enabled: false
+
+Style/MultilineBlockChain:
+  Enabled: false
+
+Style/DoubleNegation:
+  Enabled: false
+
+Style/AccessModifierDeclarations:
+  Enabled: false
+
+Style/Lambda:
+  Enabled: false
+
+Style/WordArray:
+  Enabled: false
+
+Style/Semicolon:
+  Enabled: false
