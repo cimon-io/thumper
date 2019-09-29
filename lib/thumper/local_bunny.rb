@@ -11,7 +11,7 @@ module Thumper
 
     def subscribe(&block)
       queue.subscribe(block: true, manual_ack: true) do |delivery_info, _metadata, payload|
-        block.call(JSON.parse(payload).symbolize_keys)
+        block.call(topic: delivery_info.routing_key, data: JSON.parse(payload).symbolize_keys)
         channel.acknowledge(delivery_info.delivery_tag, false)
       end
     end
