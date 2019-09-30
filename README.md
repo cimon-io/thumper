@@ -35,7 +35,25 @@ broker: ./bin/rake messagebroker:watch
   - [bunny, 3]
 ```
 
-3. Following ENV variables should be configured as well:
+3. Create sidekiq job for subscriptions and add configure it inside initializer file:
+
+```
+# app/jobs/bunny_job.rb
+class BunnyJob < ApplicationJob
+  queue_as :bunny
+
+  def perform(topic:, data:, timestamp:)
+    Rails.logger.info(topic: topic, data: data, timestamp: timestamp)
+  end
+end
+```
+
+```
+# config/initializers/thumper_initializer.rb
+Thumper.subscription_job_class = BunnyJob
+```
+
+4. Following ENV variables should be configured as well:
 
 ```
 AMQP_NAME
