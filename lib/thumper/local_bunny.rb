@@ -41,11 +41,11 @@ module Thumper
     end
 
     def fanout
-      @fanout ||= channel.fanout("ex.#{base_name}", durable: true)
+      @fanout ||= channel.fanout("ex.#{base_name}", durable: true, no_declare: true)
     end
 
     def queue
-      @queue ||= channel.queue("qe.#{base_name}", durable: true)
+      @queue ||= channel.queue("qe.#{base_name}", durable: true, no_declare: true)
     end
   end
 end
