@@ -5,13 +5,13 @@ module Thumper
   class LocalBunny
     include Singleton
 
-    def publish(data, routing_key:)
-      fanout.publish(data.to_json, routing_key: routing_key, durable: true)
+    def publish(data, **kwargs)
+      fanout.publish(data.to_json, durable: true, **kwargs)
     end
 
     def subscribe(&block)
-      queue.subscribe(block: true, manual_ack: true) do |delivery_info, _metadata, payload|
-        block.call(topic: delivery_info.routing_key, data: JSON.parse(payload).symbolize_keys)
+      queue.subscribe(block: true, manual_ack: true) do |delivery_info, metadata, payload|
+        block.call(topic: delivery_info.routing_key, data: JSON.parse(payload).symbolize_keys, timestamp: metadata.timestamp)
         channel.acknowledge(delivery_info.delivery_tag, false)
       end
     end
