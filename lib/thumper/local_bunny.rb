@@ -10,7 +10,8 @@ module Thumper
         {
           timestamp: Time.current.strftime('%FT%T.%3N%z'),
           topic: routing_key,
-          data: data
+          data: data,
+          from: base_name
         }.to_json,
         durable: true,
         routing_key: routing_key,
@@ -19,7 +20,7 @@ module Thumper
     end
 
     def subscribe(&block)
-      queue.subscribe(block: true, manual_ack: true) do |delivery_info, metadata, payload|
+      queue.subscribe(block: true, manual_ack: true) do |delivery_info, _metadata, payload|
         message = JSON.parse(payload).symbolize_keys
         block.call(topic: message[:topic], data: message[:data].symbolize_keys, timestamp: message[:timestamp])
         channel.acknowledge(delivery_info.delivery_tag, false)
