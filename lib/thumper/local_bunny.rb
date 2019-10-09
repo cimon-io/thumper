@@ -5,8 +5,17 @@ module Thumper
   class LocalBunny
     include Singleton
 
-    def publish(data, **kwargs)
-      fanout.publish(data.to_json, durable: true, **kwargs)
+    def publish(data, routing_key:, **kwargs)
+      fanout.publish(
+        {
+          timestamp: Time.current.strftime('%FT%T.%3N%z'),
+          topic: routing_key,
+          data: data
+        }.to_json,
+        durable: true,
+        routing_key: routing_key,
+        **kwargs
+      )
     end
 
     def subscribe(&block)
