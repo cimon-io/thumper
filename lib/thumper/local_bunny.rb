@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 require 'bunny'
+require 'securerandom'
+
 module Thumper
   class LocalBunny
     include Singleton
@@ -11,7 +13,8 @@ module Thumper
           timestamp: Time.current.strftime('%FT%T.%3N%z'),
           topic: routing_key,
           data: data,
-          from: base_name
+          from: base_name,
+          uuid: SecureRandom.uuid
         }.to_json,
         durable: true,
         routing_key: routing_key,
@@ -22,7 +25,7 @@ module Thumper
     def subscribe(&block)
       queue.subscribe(block: true, manual_ack: true) do |delivery_info, _metadata, payload|
         message = JSON.parse(payload).symbolize_keys
-        block.call(topic: message[:topic], data: message[:data].symbolize_keys, timestamp: message[:timestamp])
+        block.call(topic: message[:topic], data: message[:data].symbolize_keys, timestamp: message[:timestamp], uuid: message[:uuid])
         channel.acknowledge(delivery_info.delivery_tag, false)
       end
     end
