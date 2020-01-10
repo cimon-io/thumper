@@ -50,7 +50,7 @@ end
 
 ```
 # config/initializers/thumper_initializer.rb
-Thumper.subscription_job_class = BunnyJob
+Thumper.subscription_class = BunnyService
 ```
 
 4. Following ENV variables should be configured as well:
