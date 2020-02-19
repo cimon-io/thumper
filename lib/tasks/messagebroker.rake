@@ -1,17 +1,15 @@
+# frozen_string_literal: true
+
 namespace :messagebroker do
   desc 'Starts watching on messages from RabbbitMQ side'
   task watch: :environment do
-    subscription_class = Thumper.subscription_job_class
+    Thumper.client.subscribe
 
-    consumer = Thumper.client.subscribe { |args| subscription_class.perform_later(args) } if subscription_class
-
-    trap('SIGTERM') { exit }
+    trap('TERM', 'EXIT')
 
     at_exit do
-      next if consumer.nil?
-
-      consumer.cancel
-      Thumper.client.channel.close
+      SuckerPunch::Queue.shutdown_all
+      Thumper.client.unsubscribe
     end
 
     loop { sleep 60 }

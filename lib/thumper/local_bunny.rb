@@ -7,7 +7,9 @@ module Thumper
   class LocalBunny
     include Singleton
 
-    def publish(data, routing_key:, **kwargs)
+    attr_reader :consumer
+
+    def publish(data, routing_key:, **kwargs) # rubocop:disable Metrics/MethodLength
       fanout.publish(
         {
           timestamp: Time.current.strftime('%FT%T.%3N%z'),
@@ -22,12 +24,18 @@ module Thumper
       )
     end
 
-    def subscribe(options = {}, &block)
-      queue.subscribe(block: false, manual_ack: true, **options) do |delivery_info, _metadata, payload|
-        message = JSON.parse(payload).symbolize_keys
-        block.call(topic: message[:topic], data: message[:data].symbolize_keys, timestamp: message[:timestamp], uuid: message[:uuid])
-        channel.acknowledge(delivery_info.delivery_tag, false)
+    def subscribe(options = {})
+      raise MissingSubscriptionClassError if Thumper.subscription_class.nil?
+
+      @consumer = queue.subscribe(block: false, manual_ack: true, **options) do |delivery_info, _metadata, payload|
+        message = JSON.parse(payload)
+        BunnyJob.perform_async(channel, delivery_info.delivery_tag, topic: message['topic'], data: message['data'].symbolize_keys, timestamp: message['timestamp'], uuid: message['uuid'])
       end
+    end
+
+    def unsubscribe
+      consumer.cancel
+      channel.close
     end
 
     def url

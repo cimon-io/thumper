@@ -1,25 +1,28 @@
-
 AllCops:
   Exclude:
     - 'Rakefile'
 
-LineLength:
+Layout/LineLength:
   Enabled: false
 
-StringLiterals:
+Style/StringLiterals:
   EnforcedStyle: single_quotes
+
+Style/GuardClause:
+  Exclude:
+    - 'thumper.gemspec'
 
 Layout/DotPosition:
   EnforcedStyle: leading
   Enabled: true
 
-Documentation:
+Style/Documentation:
   Enabled: false
 
 Naming/MemoizedInstanceVariableName:
   Enabled: false
 
-Naming/UncommunicativeMethodParamName:
+Naming/MethodParameterName:
   Enabled: false
 
 Style/FrozenStringLiteralComment:

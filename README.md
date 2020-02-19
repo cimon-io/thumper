@@ -28,29 +28,30 @@ Or install it yourself as:
 broker: ./bin/rake messagebroker:watch
 ```
 
-2. Add separate sidekiq queue:
-
-```yml
-:queues:
-  - [bunny, 3]
-```
-
-3. Create sidekiq job for subscriptions and add configure it inside initializer file:
+2. Configure sucker_punch (optional):
 
 ```
-# app/jobs/bunny_job.rb
-class BunnyJob < ApplicationJob
-  queue_as :bunny
+# config/initializers/sucker_punch.rb
+require 'sucker_punch'
 
-  def perform(topic:, data:, timestamp:)
-    Rails.logger.info(topic: topic, data: data, timestamp: timestamp)
+SuckerPunch.exception_handler = ->(exception, _klass, _args) { Raven.capture_exception(exception) }
+SuckerPunch.shutdown_timeout = 8
+```
+
+3. Create a class to handle subscription events and configure it inside initializer file:
+
+```
+# lib/bunny_service.rb
+class BunnyService
+  def call(topic:, data:, timestamp:, uuid:)
+    Rails.logger.info(topic: topic, data: data, timestamp: timestamp, uuid: uuid)
   end
 end
 ```
 
 ```
 # config/initializers/thumper_initializer.rb
-Thumper.subscription_job_class = BunnyJob
+Thumper.subscription_class = BunnyService
 ```
 
 4. Following ENV variables should be configured as well:
