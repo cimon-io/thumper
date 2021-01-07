@@ -24,7 +24,7 @@ module Thumper
       )
     end
 
-    def subscribe(options = {})
+    def subscribe(**options)
       raise MissingSubscriptionClassError if Thumper.subscription_class.nil?
 
       @consumer = queue.subscribe(block: false, manual_ack: true, **options) do |delivery_info, _metadata, payload|
