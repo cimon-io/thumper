@@ -10,7 +10,7 @@ module Thumper
       Rails.logger.info(options)
 
       ActiveRecord::Base.connection_pool.with_connection do
-        channel.acknowledge(delivery_tag, false) if Thumper.subscription_class.call(options)
+        channel.acknowledge(delivery_tag, false) if Thumper.subscription_class.call(**options)
       end
     end
   end
